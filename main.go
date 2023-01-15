@@ -10,6 +10,9 @@ import (
 	"syscall"
 )
 
+var cgroups = "/sys/fs/cgroup"
+var custom_cgroup = filepath.Join(cgroups, "liz")
+
 // go run main.go run <cmd> <args>
 func main() {
 	switch os.Args[1] {
