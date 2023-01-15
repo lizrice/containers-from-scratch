@@ -18,6 +18,8 @@ func main() {
 	switch os.Args[1] {
 	case "run":
 		run()
+		// Removes the instantiated cgroup after container exit
+		cgCleanup()
 	case "child":
 		child()
 	default:
@@ -72,9 +74,19 @@ func cg() {
 	pids := filepath.Join(cgroups, "pids")
 	os.Mkdir(filepath.Join(pids, "liz"), 0755)
 	must(ioutil.WriteFile(filepath.Join(pids, "liz/pids.max"), []byte("20"), 0700))
-	// Removes the new cgroup in place after the container exits
-	must(ioutil.WriteFile(filepath.Join(pids, "liz/notify_on_release"), []byte("1"), 0700))
 	must(ioutil.WriteFile(filepath.Join(pids, "liz/cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
+func cgCleanup() error {
+	alive, err := ioutil.ReadFile(filepath.Join(custom_cgroup, "pids.current"))
+	if err != nil { // or must(err).. but then it'll look weird..
+		panic(err)
+	}
+
+	if alive[0] != uint8(48) {
+		must(ioutil.WriteFile(filepath.Join(custom_cgroup, "cgroup.kill"), []byte("1"), 0644))
+	}
+	must(os.Remove(custom_cgroup))
+
+	return nil
 }
 
 func must(err error) {
