@@ -51,7 +51,11 @@ func child() {
 	cmd.Stderr = os.Stderr
 
 	must(syscall.Sethostname([]byte("container")))
-	must(syscall.Chroot("/home/liz/ubuntufs"))
+	// cd /tmp/containers-from-scratch
+	// skopeo copy docker://ubuntu oci:ubuntu
+	// mkdir ubuntufs
+	// tar -xf ../ubuntu/blobs/sha256/somesha.... -C ubuntufs && rm -rf ubuntu
+	must(syscall.Chroot("/tmp/containers-from-scratch/ubuntufs/"))
 	must(os.Chdir("/"))
 	must(syscall.Mount("proc", "proc", "proc", 0, ""))
 	must(syscall.Mount("thing", "mytemp", "tmpfs", 0, ""))
