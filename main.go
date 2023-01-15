@@ -70,11 +70,12 @@ func child() {
 }
 
 func cg() {
-	cgroups := "/sys/fs/cgroup/"
-	pids := filepath.Join(cgroups, "pids")
-	os.Mkdir(filepath.Join(pids, "liz"), 0755)
-	must(ioutil.WriteFile(filepath.Join(pids, "liz/pids.max"), []byte("20"), 0700))
-	must(ioutil.WriteFile(filepath.Join(pids, "liz/cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
+	os.Mkdir(custom_cgroup, 0755)
+
+	must(ioutil.WriteFile(filepath.Join(custom_cgroup, "pids.max"), []byte("20"), 0644))
+	must(ioutil.WriteFile(filepath.Join(custom_cgroup, "cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0644))
+}
+
 func cgCleanup() error {
 	alive, err := ioutil.ReadFile(filepath.Join(custom_cgroup, "pids.current"))
 	if err != nil { // or must(err).. but then it'll look weird..
