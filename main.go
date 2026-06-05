@@ -56,7 +56,7 @@ func child() {
 	must(cmd.Run())
 
 	must(syscall.Unmount("proc", 0))
-	must(syscall.Unmount("thing", 0))
+	must(syscall.Unmount("mytemp", 0))
 }
 
 func cg() {
